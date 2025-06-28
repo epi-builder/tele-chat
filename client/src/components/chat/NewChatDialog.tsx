@@ -33,8 +33,9 @@ export default function NewChatDialog({ isOpen, onClose, onChatCreated, currentU
   const { toast } = useToast();
 
   const { data: searchResults = [], isLoading: isSearching } = useQuery<User[]>({
-    queryKey: ["/api/users/search", searchQuery],
+    queryKey: ["/api/users/search", { q: searchQuery }],
     enabled: searchQuery.length > 0,
+    queryFn: () => fetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}`).then(res => res.json()),
   });
 
   const createDirectChatMutation = useMutation({

@@ -14,7 +14,7 @@ import {
   type MessageWithSender,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, sql, or, ilike } from "drizzle-orm";
+import { eq, and, desc, sql, or, ilike, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -95,16 +95,20 @@ export class DatabaseStorage implements IStorage {
 
     // Get last message for each conversation
     const conversationIds = userConversations.map(c => c.conversation.id);
-    const lastMessages = await db
-      .select({
-        conversationId: messages.conversationId,
-        message: messages,
-        sender: users,
-      })
-      .from(messages)
-      .innerJoin(users, eq(messages.senderId, users.id))
-      .where(sql`${messages.conversationId} IN (${sql.join(conversationIds.map(id => sql`${id}`), sql`, `)})`)
-      .orderBy(desc(messages.createdAt));
+    let lastMessages: any[] = [];
+    
+    if (conversationIds.length > 0) {
+      lastMessages = await db
+        .select({
+          conversationId: messages.conversationId,
+          message: messages,
+          sender: users,
+        })
+        .from(messages)
+        .innerJoin(users, eq(messages.senderId, users.id))
+        .where(inArray(messages.conversationId, conversationIds))
+        .orderBy(desc(messages.createdAt));
+    }
 
     // Group by conversation and get participants
     const conversationMap = new Map<string, ConversationWithParticipants>();
@@ -120,14 +124,17 @@ export class DatabaseStorage implements IStorage {
     }
 
     // Get all participants for these conversations
-    const allParticipants = await db
-      .select({
-        participant: participants,
-        user: users,
-      })
-      .from(participants)
-      .innerJoin(users, eq(participants.userId, users.id))
-      .where(sql`${participants.conversationId} IN (${sql.join(conversationIds.map(id => sql`${id}`), sql`, `)})`);
+    let allParticipants: any[] = [];
+    if (conversationIds.length > 0) {
+      allParticipants = await db
+        .select({
+          participant: participants,
+          user: users,
+        })
+        .from(participants)
+        .innerJoin(users, eq(participants.userId, users.id))
+        .where(inArray(participants.conversationId, conversationIds));
+    }
 
     // Populate participants
     for (const row of allParticipants) {
