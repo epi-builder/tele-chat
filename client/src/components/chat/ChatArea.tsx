@@ -86,7 +86,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
 
   // Handle typing indicators
   useEffect(() => {
-    let typingTimeout: NodeJS.Timeout;
+    let typingTimeout: NodeJS.Timeout | undefined;
 
     if (messageContent && isConnected) {
       if (!isTyping) {
@@ -98,7 +98,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
         });
       }
 
-      clearTimeout(typingTimeout);
+      if (typingTimeout) clearTimeout(typingTimeout);
       typingTimeout = setTimeout(() => {
         setIsTyping(false);
         sendWebSocketMessage({
@@ -110,7 +110,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
     }
 
     return () => {
-      clearTimeout(typingTimeout);
+      if (typingTimeout) clearTimeout(typingTimeout);
     };
   }, [messageContent, conversationId, isConnected, isTyping, sendWebSocketMessage]);
 
@@ -134,13 +134,14 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
     if (conversation.isGroup) {
       return conversation.name || "Unnamed Group";
     } else {
+      if (!conversation.participants) return "Loading...";
       const otherUser = conversation.participants.find(p => p.userId !== user?.id)?.user;
       return otherUser ? `${otherUser.firstName || ''} ${otherUser.lastName || ''}`.trim() || otherUser.email : "Unknown User";
     }
   };
 
   const getConversationAvatar = () => {
-    if (!conversation) return null;
+    if (!conversation || !conversation.participants) return null;
     
     if (conversation.isGroup) {
       return null;
@@ -151,7 +152,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
   };
 
   const getAvatarFallback = () => {
-    if (!conversation) return 'L';
+    if (!conversation || !conversation.participants) return 'L';
     
     if (conversation.isGroup) {
       const name = conversation.name || "Group";
@@ -231,7 +232,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
                 key={message.id}
                 message={message}
                 isOwnMessage={message.senderId === user?.id}
-                showAvatar={conversation?.isGroup}
+                showAvatar={conversation?.isGroup || false}
               />
             ))}
             <div ref={messagesEndRef} />
