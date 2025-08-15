@@ -6,11 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Globe, Languages, Palette } from "lucide-react";
+import { ArrowLeft, Globe, Languages } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { useTheme } from "@/contexts/ThemeContext";
 import type { User, UpdateUserSettings } from "@shared/schema";
 
 const languages = [
@@ -30,7 +28,6 @@ export default function Settings() {
   const [translateToLanguage, setTranslateToLanguage] = useState("en");
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { theme, setTheme, actualTheme } = useTheme();
 
   const { data: user } = useQuery<User>({
     queryKey: ["/api/auth/user"],
@@ -199,76 +196,6 @@ export default function Settings() {
                     </p>
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Theme Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Palette className="w-5 h-5" />
-                <span>Appearance</span>
-              </CardTitle>
-              <CardDescription>
-                Customize the app's appearance and theme
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium">Theme</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Choose your preferred color scheme
-                    </p>
-                  </div>
-                  <ThemeToggle />
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Current theme: <span className="font-medium capitalize">{theme === 'system' ? `System (${actualTheme})` : theme}</span>
-                </div>
-              </div>
-              
-              <div className="border-t pt-4">
-                <h4 className="text-sm font-medium mb-3">Theme Options</h4>
-                <div className="grid grid-cols-3 gap-4">
-                  <button
-                    onClick={() => setTheme('light')}
-                    className={`p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary ${
-                      theme === 'light' ? 'border-primary bg-primary/5' : 'border-border'
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      <div className="w-full h-8 bg-white rounded border border-gray-200"></div>
-                      <div className="text-xs font-medium">Light</div>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => setTheme('dark')}
-                    className={`p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary ${
-                      theme === 'dark' ? 'border-primary bg-primary/5' : 'border-border'
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      <div className="w-full h-8 bg-gray-900 rounded border border-gray-700"></div>
-                      <div className="text-xs font-medium">Dark</div>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => setTheme('system')}
-                    className={`p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary ${
-                      theme === 'system' ? 'border-primary bg-primary/5' : 'border-border'
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      <div className="w-full h-8 bg-gradient-to-r from-white to-gray-900 rounded border border-gray-300"></div>
-                      <div className="text-xs font-medium">System</div>
-                    </div>
-                  </button>
-                </div>
               </div>
             </CardContent>
           </Card>

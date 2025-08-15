@@ -16,7 +16,6 @@ import { Settings, Search, Plus, X, User as UserIcon, LogOut } from "lucide-reac
 import { format } from "date-fns";
 import type { User, ConversationWithParticipants } from "@shared/schema";
 import NewChatDialog from "./NewChatDialog";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useLocation } from "wouter";
 
 interface ChatSidebarProps {
@@ -138,7 +137,6 @@ export default function ChatSidebar({
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
