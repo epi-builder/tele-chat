@@ -48,10 +48,12 @@ TeleChat is a modern, real-time messaging application built with React, Express,
 - **Sessions**: Authentication session storage
 
 ### UI Components
-- **Chat Sidebar**: Conversation list with search functionality
+- **Chat Sidebar**: Conversation list with search functionality and theme toggle
 - **Chat Area**: Message display with real-time updates
 - **Message Bubbles**: Differentiated styling for sent/received messages
 - **New Chat Dialog**: User search and conversation creation
+- **Theme System**: Dark/light/system mode toggle with smooth transitions
+- **Settings Page**: Comprehensive user preferences including appearance settings
 
 ## Data Flow
 
@@ -125,6 +127,12 @@ TeleChat is a modern, real-time messaging application built with React, Express,
 ## Recent Changes
 ```
 August 15, 2025:
+- Implemented comprehensive dark/light mode toggle system with smooth transitions
+- Added ThemeProvider context for managing light/dark/system preferences
+- Integrated theme toggle in chat sidebar and comprehensive settings page
+- Enhanced CSS with smooth 300ms transitions for all theme-aware elements
+- Added theme persistence via localStorage with system preference detection
+- Created visual theme preview cards in settings for better UX
 - Fixed ChatArea loading issue: conversation data now properly displays contact names instead of "Loading..."
 - Resolved TypeScript/LSP errors in message timestamps and null checks
 - Improved WebSocket connection handling with null checks

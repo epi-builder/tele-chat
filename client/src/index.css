@@ -68,11 +68,23 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border transition-colors duration-300;
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased bg-background text-foreground transition-colors duration-300;
+  }
+  
+  html {
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  }
+  
+  html.dark {
+    color-scheme: dark;
+  }
+  
+  html.light {
+    color-scheme: light;
   }
 }
 
@@ -101,7 +113,26 @@
 .transition-colors {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  transition-duration: 300ms;
+}
+
+/* Theme transition utilities */
+.theme-transition {
+  transition: 
+    background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced transitions for theme-aware components */
+.card, .popover, .dialog, .dropdown, .tooltip {
+  @apply theme-transition;
+}
+
+/* Smooth icon transitions for theme toggle */
+.theme-icon {
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Custom scrollbar for webkit browsers */
