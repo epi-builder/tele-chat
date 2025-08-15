@@ -129,6 +129,9 @@ August 15, 2025:
 - Resolved TypeScript/LSP errors in message timestamps and null checks
 - Improved WebSocket connection handling with null checks
 - Enhanced error handling for missing user data
+- Fixed settings page API request parameter order issue causing "Method is not a valid HTTP token" error
+- Fixed TypeScript/Drizzle ORM errors in server storage layer
+- Improved authentication domain matching for better local development support
 - Code cleanup and removal of debug logs
 ```
 

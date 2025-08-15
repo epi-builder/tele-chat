@@ -290,13 +290,13 @@ export class DatabaseStorage implements IStorage {
     const [sender] = await db
       .select()
       .from(users)
-      .where(eq(users.id, message.senderId));
+      .where(eq(users.id, message.senderId!));
 
     // Update conversation's updatedAt
     await db
       .update(conversations)
       .set({ updatedAt: new Date() })
-      .where(eq(conversations.id, message.conversationId));
+      .where(eq(conversations.id, message.conversationId!));
 
     return {
       ...newMessage,
