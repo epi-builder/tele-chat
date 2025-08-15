@@ -127,15 +127,11 @@ export default function NewChatDialog({ isOpen, onClose, onChatCreated, currentU
   };
 
   const toggleUserSelection = (userId: string) => {
-    console.log('toggleUserSelection called with userId:', userId);
-    setSelectedUsers(prev => {
-      const newSelection = prev.includes(userId) 
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
         ? prev.filter(id => id !== userId)
-        : [...prev, userId];
-      console.log('Previous selectedUsers:', prev);
-      console.log('New selectedUsers:', newSelection);
-      return newSelection;
-    });
+        : [...prev, userId]
+    );
   };
 
   const getUserName = (user: User) => {
@@ -237,7 +233,6 @@ export default function NewChatDialog({ isOpen, onClose, onChatCreated, currentU
             {selectedUsers.length > 0 && (
               <div className="text-sm text-gray-600">
                 {selectedUsers.length} member{selectedUsers.length === 1 ? '' : 's'} selected
-                <div className="text-xs text-gray-400">Selected IDs: {selectedUsers.join(', ')}</div>
               </div>
             )}
 
@@ -278,9 +273,6 @@ export default function NewChatDialog({ isOpen, onClose, onChatCreated, currentU
             >
               {createGroupChatMutation.isPending ? "Creating..." : "Create Group"}
             </Button>
-            <div className="text-xs text-gray-400 mt-2">
-              Debug: groupName="{groupName}", selectedUsers.length={selectedUsers.length}, isPending={createGroupChatMutation.isPending}
-            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>
