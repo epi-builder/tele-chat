@@ -26,9 +26,11 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { data: conversation } = useQuery<ConversationWithParticipants>({
-    queryKey: ["/api/conversations", conversationId],
+  const { data: conversationData } = useQuery<ConversationWithParticipants[]>({
+    queryKey: ["/api/conversations"],
   });
+
+  const conversation = conversationData?.find(c => c.id === conversationId);
 
   const { data: messages = [], isLoading: messagesLoading, error: messagesError } = useQuery<MessageWithSender[]>({
     queryKey: [`/api/conversations/${conversationId}/messages`],
@@ -38,6 +40,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
   // Debug logging
   useEffect(() => {
     console.log("ChatArea - conversationId:", conversationId);
+    console.log("ChatArea - conversationData:", conversationData);
     console.log("ChatArea - conversation:", conversation);
     console.log("ChatArea - messages:", messages);
     console.log("ChatArea - messagesLoading:", messagesLoading);
@@ -46,7 +49,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
     console.log("ChatArea - Should show loading:", messagesLoading);
     console.log("ChatArea - Should show empty:", !messagesLoading && (!messages || messages.length === 0));
     console.log("ChatArea - Should show messages:", !messagesLoading && messages && messages.length > 0);
-  }, [conversationId, conversation, messages, messagesLoading, messagesError]);
+  }, [conversationId, conversationData, conversation, messages, messagesLoading, messagesError]);
 
   const { sendMessage: sendWebSocketMessage, isConnected } = useWebSocket(user?.id || '', conversationId);
 
@@ -179,7 +182,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
     }
   };
 
-  if (!conversation && !messagesLoading) {
+  if (!conversation && conversationData) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-gray-500">Conversation not found</div>
