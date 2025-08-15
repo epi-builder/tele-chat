@@ -76,7 +76,7 @@ export function useWebSocket(userId: string, conversationId?: string) {
         if (message.conversationId) {
           console.log("Invalidating queries for conversation:", message.conversationId);
           queryClient.invalidateQueries({ 
-            queryKey: ["/api/conversations", message.conversationId, "messages"] 
+            queryKey: [`/api/conversations/${message.conversationId}/messages`] 
           });
           queryClient.invalidateQueries({ 
             queryKey: ["/api/conversations"] 

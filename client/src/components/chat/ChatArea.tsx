@@ -31,7 +31,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
   });
 
   const { data: messages = [], isLoading: messagesLoading, error: messagesError } = useQuery<MessageWithSender[]>({
-    queryKey: ["/api/conversations", conversationId, "messages"],
+    queryKey: [`/api/conversations/${conversationId}/messages`],
     enabled: !!conversationId,
   });
 
@@ -51,7 +51,7 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
       return apiRequest('POST', `/api/conversations/${conversationId}/messages`, { content });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/conversations", conversationId, "messages"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/conversations/${conversationId}/messages`] });
       queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
       setMessageContent("");
       adjustTextareaHeight();
