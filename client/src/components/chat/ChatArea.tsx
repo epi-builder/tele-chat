@@ -33,11 +33,20 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
   const { data: messages = [], isLoading: messagesLoading, error: messagesError } = useQuery<MessageWithSender[]>({
     queryKey: [`/api/conversations/${conversationId}/messages`],
     enabled: !!conversationId,
-    staleTime: 1000 * 60, // Consider data fresh for 1 minute
-    refetchOnWindowFocus: false, // Prevent refetch on window focus
   });
 
-
+  // Debug logging
+  useEffect(() => {
+    console.log("ChatArea - conversationId:", conversationId);
+    console.log("ChatArea - conversation:", conversation);
+    console.log("ChatArea - messages:", messages);
+    console.log("ChatArea - messagesLoading:", messagesLoading);
+    console.log("ChatArea - messagesError:", messagesError);
+    console.log("ChatArea - messages.length:", messages?.length);
+    console.log("ChatArea - Should show loading:", messagesLoading);
+    console.log("ChatArea - Should show empty:", !messagesLoading && (!messages || messages.length === 0));
+    console.log("ChatArea - Should show messages:", !messagesLoading && messages && messages.length > 0);
+  }, [conversationId, conversation, messages, messagesLoading, messagesError]);
 
   const { sendMessage: sendWebSocketMessage, isConnected } = useWebSocket(user?.id || '', conversationId);
 
