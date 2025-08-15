@@ -285,16 +285,19 @@ export class DatabaseStorage implements IStorage {
       .values(message)
       .returning();
 
-    const [sender] = await db
+    const senderQuery = db
       .select()
       .from(users)
       .where(eq(users.id, message.senderId));
+    const senderRows = await senderQuery;
+    const sender = senderRows[0];
 
     // Update conversation's updatedAt
-    await db
+    const updateQuery = db
       .update(conversations)
       .set({ updatedAt: new Date() })
       .where(eq(conversations.id, message.conversationId));
+    await updateQuery;
 
     return {
       ...newMessage,

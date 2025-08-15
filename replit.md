@@ -122,10 +122,21 @@ TeleChat is a modern, real-time messaging application built with React, Express,
 - **ISSUER_URL**: OIDC issuer URL (defaults to Replit)
 - **REPLIT_DOMAINS**: Allowed domains for OIDC
 
+## Recent Changes
+```
+August 15, 2025:
+- Fixed ChatArea loading issue: conversation data now properly displays contact names instead of "Loading..."
+- Resolved TypeScript/LSP errors in message timestamps and null checks
+- Improved WebSocket connection handling with null checks
+- Enhanced error handling for missing user data
+- Code cleanup and removal of debug logs
+```
+
 ## Changelog
 ```
 Changelog:
 - June 28, 2025. Initial setup
+- August 15, 2025. Loading fixes and code cleanup
 ```
 
 ## User Preferences

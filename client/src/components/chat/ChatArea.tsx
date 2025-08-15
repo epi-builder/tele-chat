@@ -37,20 +37,6 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
     enabled: !!conversationId,
   });
 
-  // Debug logging
-  useEffect(() => {
-    console.log("ChatArea - conversationId:", conversationId);
-    console.log("ChatArea - conversationData:", conversationData);
-    console.log("ChatArea - conversation:", conversation);
-    console.log("ChatArea - messages:", messages);
-    console.log("ChatArea - messagesLoading:", messagesLoading);
-    console.log("ChatArea - messagesError:", messagesError);
-    console.log("ChatArea - messages.length:", messages?.length);
-    console.log("ChatArea - Should show loading:", messagesLoading);
-    console.log("ChatArea - Should show empty:", !messagesLoading && (!messages || messages.length === 0));
-    console.log("ChatArea - Should show messages:", !messagesLoading && messages && messages.length > 0);
-  }, [conversationId, conversationData, conversation, messages, messagesLoading, messagesError]);
-
   const { sendMessage: sendWebSocketMessage, isConnected } = useWebSocket(user?.id || '', conversationId);
 
   const sendMessageMutation = useMutation({

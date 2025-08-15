@@ -87,7 +87,7 @@ export default function ChatSidebar({
   };
 
   const filteredConversations = conversations.filter(conversation => {
-    const name = getConversationName(conversation).toLowerCase();
+    const name = getConversationName(conversation)?.toLowerCase() || '';
     return name.includes(searchQuery.toLowerCase());
   });
 
@@ -203,7 +203,7 @@ export default function ChatSidebar({
                         <>
                           {conversation.isGroup && (
                             <span className="font-medium">
-                              {conversation.lastMessage?.sender?.firstName || conversation.lastMessage?.sender?.email || 'Unknown'}:{' '}
+                              {conversation.lastMessage.sender?.firstName || conversation.lastMessage.sender?.email || 'Unknown'}:{' '}
                             </span>
                           )}
                           {conversation.lastMessage.content}
