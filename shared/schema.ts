@@ -31,6 +31,9 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  preferredLanguage: varchar("preferred_language").default("ko"),
+  autoTranslate: boolean("auto_translate").default(false),
+  translateToLanguage: varchar("translate_to_language").default("en"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -117,6 +120,12 @@ export const insertParticipantSchema = createInsertSchema(participants).omit({
   joinedAt: true,
 });
 
+export const updateUserSettingsSchema = z.object({
+  preferredLanguage: z.string().optional(),
+  autoTranslate: z.boolean().optional(),
+  translateToLanguage: z.string().optional(),
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -126,6 +135,7 @@ export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type Participant = typeof participants.$inferSelect;
 export type InsertParticipant = z.infer<typeof insertParticipantSchema>;
+export type UpdateUserSettings = z.infer<typeof updateUserSettingsSchema>;
 
 // Extended types for API responses
 export type ConversationWithParticipants = Conversation & {

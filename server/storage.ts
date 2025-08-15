@@ -12,6 +12,7 @@ import {
   type InsertParticipant,
   type ConversationWithParticipants,
   type MessageWithSender,
+  type UpdateUserSettings,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, or, ilike, inArray } from "drizzle-orm";
@@ -20,6 +21,7 @@ export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUserSettings(userId: string, settings: UpdateUserSettings): Promise<User>;
   
   // User search
   searchUsers(query: string, currentUserId: string): Promise<User[]>;
@@ -285,19 +287,16 @@ export class DatabaseStorage implements IStorage {
       .values(message)
       .returning();
 
-    const senderQuery = db
+    const [sender] = await db
       .select()
       .from(users)
       .where(eq(users.id, message.senderId));
-    const senderRows = await senderQuery;
-    const sender = senderRows[0];
 
     // Update conversation's updatedAt
-    const updateQuery = db
+    await db
       .update(conversations)
       .set({ updatedAt: new Date() })
       .where(eq(conversations.id, message.conversationId));
-    await updateQuery;
 
     return {
       ...newMessage,
@@ -318,6 +317,19 @@ export class DatabaseStorage implements IStorage {
       .limit(1);
 
     return !!participant;
+  }
+
+  async updateUserSettings(userId: string, settings: UpdateUserSettings): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        ...settings,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
+    return updatedUser;
   }
 }
 

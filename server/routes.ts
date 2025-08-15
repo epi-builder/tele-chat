@@ -7,6 +7,7 @@ import {
   insertConversationSchema,
   insertMessageSchema,
   insertParticipantSchema,
+  updateUserSettingsSchema,
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -43,6 +44,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error searching users:", error);
       res.status(500).json({ message: "Failed to search users" });
+    }
+  });
+
+  // Update user settings
+  app.patch('/api/users/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const validationResult = updateUserSettingsSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid settings data",
+          errors: validationResult.error.errors 
+        });
+      }
+      
+      const updatedUser = await storage.updateUserSettings(userId, validationResult.data);
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user settings:", error);
+      res.status(500).json({ message: "Failed to update user settings" });
     }
   });
 

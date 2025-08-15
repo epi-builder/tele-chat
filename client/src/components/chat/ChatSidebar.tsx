@@ -16,6 +16,7 @@ import { Settings, Search, Plus, X, User as UserIcon, LogOut } from "lucide-reac
 import { format } from "date-fns";
 import type { User, ConversationWithParticipants } from "@shared/schema";
 import NewChatDialog from "./NewChatDialog";
+import { useLocation } from "wouter";
 
 interface ChatSidebarProps {
   user: User;
@@ -33,6 +34,7 @@ export default function ChatSidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
   const queryClient = useQueryClient();
+  const [location, setLocation] = useLocation();
 
   const { data: conversations = [], isLoading } = useQuery<ConversationWithParticipants[]>({
     queryKey: ["/api/conversations"],
@@ -108,6 +110,10 @@ export default function ChatSidebar({
     setIsNewChatOpen(false);
   };
 
+  const handleOpenSettings = () => {
+    setLocation("/settings");
+  };
+
   return (
     <>
       <div className="flex flex-col h-full">
@@ -142,7 +148,10 @@ export default function ChatSidebar({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-48" align="end">
-                  <DropdownMenuItem className="flex items-center space-x-2">
+                  <DropdownMenuItem 
+                    className="flex items-center space-x-2"
+                    onClick={handleOpenSettings}
+                  >
                     <UserIcon className="w-4 h-4" />
                     <span>Profile Settings</span>
                   </DropdownMenuItem>
