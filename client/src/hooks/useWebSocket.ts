@@ -25,7 +25,6 @@ export function useWebSocket(userId: string, conversationId?: string) {
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log("WebSocket connected");
         setIsConnected(true);
         reconnectAttempts.current = 0;
         
@@ -37,7 +36,6 @@ export function useWebSocket(userId: string, conversationId?: string) {
       };
 
       ws.onclose = () => {
-        console.log("WebSocket disconnected");
         setIsConnected(false);
         
         // Attempt to reconnect with exponential backoff
@@ -69,15 +67,24 @@ export function useWebSocket(userId: string, conversationId?: string) {
   }, [userId]);
 
   const handleMessage = (message: WebSocketMessage) => {
-    console.log("Handling WebSocket message:", message);
     switch (message.type) {
       case 'new_message':
-        // Invalidate messages query for the conversation
-        if (message.conversationId) {
-          console.log("Invalidating queries for conversation:", message.conversationId);
-          queryClient.invalidateQueries({ 
-            queryKey: [`/api/conversations/${message.conversationId}/messages`] 
-          });
+        // Update cache directly with the new message to avoid loading states
+        if (message.conversationId && message.message) {
+          // Update messages cache by adding the new message
+          queryClient.setQueryData(
+            [`/api/conversations/${message.conversationId}/messages`],
+            (oldMessages: any[] = []) => {
+              // Check if message already exists to prevent duplicates
+              const messageExists = oldMessages.some(m => m.id === message.message.id);
+              if (messageExists) {
+                return oldMessages;
+              }
+              return [...oldMessages, message.message];
+            }
+          );
+          
+          // Update conversations list to reflect latest message
           queryClient.invalidateQueries({ 
             queryKey: ["/api/conversations"] 
           });
@@ -88,8 +95,6 @@ export function useWebSocket(userId: string, conversationId?: string) {
         // Handle typing indicators
         window.dispatchEvent(new CustomEvent('user_typing', { detail: message }));
         break;
-      default:
-        console.log("Unknown message type:", message.type);
     }
   };
 
