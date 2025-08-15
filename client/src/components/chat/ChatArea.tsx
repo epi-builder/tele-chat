@@ -5,7 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Menu, Search, Info, Paperclip, Send } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Menu, Search, MoreVertical, Paperclip, Send, Settings, LogOut, Users, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,6 +35,7 @@ interface ChatAreaProps {
 export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProps) {
   const [messageContent, setMessageContent] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { user } = useAuth();
@@ -206,9 +221,31 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
           <Button variant="ghost" size="icon" className="text-gray-600">
             <Search className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-gray-600">
-            <Info className="w-5 h-5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-gray-600">
+                <MoreVertical className="w-5 h-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem
+                onClick={() => setIsSettingsOpen(true)}
+                className="flex items-center space-x-2"
+              >
+                <Settings className="w-4 h-4" />
+                <span>채팅방 설정</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex items-center space-x-2">
+                <Users className="w-4 h-4" />
+                <span>참가자 관리</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="flex items-center space-x-2 text-red-600 focus:text-red-600">
+                <LogOut className="w-4 h-4" />
+                <span>나가기</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -269,6 +306,102 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
           </Button>
         </div>
       </div>
+
+      {/* Chat Settings Modal */}
+      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <MessageSquare className="w-5 h-5" />
+              <span>채팅방 설정</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            {/* Chat Name Section */}
+            <div className="space-y-3">
+              <h3 className="font-medium text-gray-900">채팅방 이름</h3>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-700">{getConversationName()}</p>
+              </div>
+            </div>
+
+            {/* Participants Section */}
+            <div className="space-y-3">
+              <h3 className="font-medium text-gray-900">참가자</h3>
+              <div className="space-y-2">
+                {conversation?.participants?.map((participant) => (
+                  <div key={participant.userId} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={participant.user.profileImageUrl || undefined} />
+                      <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                        {`${participant.user.firstName?.[0] || ''}${participant.user.lastName?.[0] || ''}` || 
+                         participant.user.email?.[0]?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">
+                        {`${participant.user.firstName || ''} ${participant.user.lastName || ''}`.trim() || 
+                         participant.user.email || 'Unknown User'}
+                        {participant.userId === user?.id && ' (나)'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        @{participant.user.email?.split('@')[0] || 'user'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Chat Info */}
+            <div className="space-y-3">
+              <h3 className="font-medium text-gray-900">채팅방 정보</h3>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>채팅방 유형:</span>
+                  <span>{conversation?.isGroup ? '그룹 채팅' : '개인 채팅'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>참가자 수:</span>
+                  <span>{conversation?.participants?.length || 0}명</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2 pt-4 border-t">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start" 
+                onClick={() => {
+                  // 참가자 관리 기능 추가 예정
+                  toast({
+                    title: "준비 중",
+                    description: "참가자 관리 기능은 준비 중입니다.",
+                  });
+                }}
+              >
+                <Users className="w-4 h-4 mr-2" />
+                참가자 관리
+              </Button>
+              <Button 
+                variant="destructive" 
+                className="w-full justify-start"
+                onClick={() => {
+                  // 나가기 기능 추가 예정
+                  toast({
+                    title: "준비 중",
+                    description: "채팅방 나가기 기능은 준비 중입니다.",
+                  });
+                }}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                채팅방 나가기
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
