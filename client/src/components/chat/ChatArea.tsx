@@ -26,7 +26,6 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
   const { data: conversation } = useQuery<ConversationWithParticipants>({
     queryKey: ["/api/conversations", conversationId],
   });
