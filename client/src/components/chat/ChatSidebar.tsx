@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Search, Plus, X } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Settings, Search, Plus, X, User as UserIcon, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import type { User, ConversationWithParticipants } from "@shared/schema";
 import NewChatDialog from "./NewChatDialog";
@@ -124,14 +131,31 @@ export default function ChatSidebar({
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/10"
-                onClick={handleLogout}
-              >
-                <Settings className="w-5 h-5" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/10"
+                  >
+                    <Settings className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-48" align="end">
+                  <DropdownMenuItem className="flex items-center space-x-2">
+                    <UserIcon className="w-4 h-4" />
+                    <span>Profile Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="flex items-center space-x-2 text-red-600 focus:text-red-600"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 variant="ghost"
                 size="icon"
