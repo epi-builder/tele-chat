@@ -194,7 +194,7 @@ export default function ChatSidebar({
                       </div>
                       {conversation.lastMessage && (
                         <div className="text-xs text-gray-500">
-                          {formatLastMessageTime(conversation.lastMessage.createdAt!)}
+                          {formatLastMessageTime(conversation.lastMessage.createdAt?.toString() || '')}
                         </div>
                       )}
                     </div>
@@ -203,7 +203,7 @@ export default function ChatSidebar({
                         <>
                           {conversation.isGroup && (
                             <span className="font-medium">
-                              {conversation.lastMessage.sender.firstName || conversation.lastMessage.sender.email}:{' '}
+                              {conversation.lastMessage?.sender?.firstName || conversation.lastMessage?.sender?.email || 'Unknown'}:{' '}
                             </span>
                           )}
                           {conversation.lastMessage.content}

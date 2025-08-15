@@ -33,7 +33,7 @@ export default function MessageBubble({ message, isOwnMessage, showAvatar }: Mes
           </div>
           <div className="flex items-center space-x-2 mt-1 mr-2 justify-end">
             <span className="text-xs text-gray-500">
-              {formatTime(message.createdAt!)}
+              {formatTime(message.createdAt?.toString() || '')}
             </span>
             <CheckCheck className="w-3 h-3 text-blue-600" />
           </div>
@@ -63,7 +63,7 @@ export default function MessageBubble({ message, isOwnMessage, showAvatar }: Mes
         </div>
         <div className="flex items-center space-x-2 mt-1 ml-2">
           <span className="text-xs text-gray-500">
-            {formatTime(message.createdAt!)}
+            {formatTime(message.createdAt?.toString() || '')}
           </span>
         </div>
       </div>

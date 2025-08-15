@@ -147,9 +147,9 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
     if (conversation.isGroup) {
       return conversation.name || "Unnamed Group";
     } else {
-      if (!conversation.participants) return "Loading...";
-      const otherUser = conversation.participants.find(p => p.userId !== user?.id)?.user;
-      return otherUser ? `${otherUser.firstName || ''} ${otherUser.lastName || ''}`.trim() || otherUser.email : "Unknown User";
+      const otherUser = conversation.participants?.find(p => p.userId !== user?.id)?.user;
+      if (!otherUser) return "Loading...";
+      return `${otherUser.firstName || ''} ${otherUser.lastName || ''}`.trim() || otherUser.email || "Unknown User";
     }
   };
 

@@ -191,16 +191,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const participantIds = conversation.participants.map(p => p.userId);
         console.log(`Broadcasting message to participants:`, participantIds);
         for (const participantId of participantIds) {
-          const ws = wsConnections.get(participantId);
-          if (ws && ws.readyState === WebSocket.OPEN) {
-            console.log(`Sending WebSocket message to user ${participantId}`);
-            ws.send(JSON.stringify({
-              type: 'new_message',
-              message,
-              conversationId: id,
-            }));
-          } else {
-            console.log(`User ${participantId} not connected or WebSocket closed`);
+          if (participantId) {
+            const ws = wsConnections.get(participantId);
+            if (ws && ws.readyState === WebSocket.OPEN) {
+              console.log(`Sending WebSocket message to user ${participantId}`);
+              ws.send(JSON.stringify({
+                type: 'new_message',
+                message,
+                conversationId: id,
+              }));
+            } else {
+              console.log(`User ${participantId} not connected or WebSocket closed`);
+            }
           }
         }
       }
@@ -242,14 +244,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 .filter(id => id !== userId);
               
               for (const participantId of participantIds) {
-                const participantWs = wsConnections.get(participantId);
-                if (participantWs && participantWs.readyState === WebSocket.OPEN) {
-                  participantWs.send(JSON.stringify({
-                    type: 'typing',
-                    conversationId,
-                    userId,
-                    isTyping,
-                  }));
+                if (participantId) {
+                  const participantWs = wsConnections.get(participantId);
+                  if (participantWs && participantWs.readyState === WebSocket.OPEN) {
+                    participantWs.send(JSON.stringify({
+                      type: 'typing',
+                      conversationId,
+                      userId,
+                      isTyping,
+                    }));
+                  }
                 }
               }
             }
