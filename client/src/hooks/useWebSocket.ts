@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface WebSocketMessage {
   type: string;
   [key: string]: any;
 }
 
-export function useWebSocket(userId: string) {
+export function useWebSocket(userId: string, conversationId?: string) {
   const [isConnected, setIsConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
+  const queryClient = useQueryClient();
 
   const connect = useCallback(() => {
     if (!userId) return;
@@ -55,6 +57,7 @@ export function useWebSocket(userId: string) {
       ws.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
+          console.log("Received WebSocket message:", message);
           handleMessage(message);
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
@@ -66,10 +69,19 @@ export function useWebSocket(userId: string) {
   }, [userId]);
 
   const handleMessage = (message: WebSocketMessage) => {
+    console.log("Handling WebSocket message:", message);
     switch (message.type) {
       case 'new_message':
-        // This would typically trigger a query invalidation
-        // or update local state to show the new message
+        // Invalidate messages query for the conversation
+        if (message.conversationId) {
+          console.log("Invalidating queries for conversation:", message.conversationId);
+          queryClient.invalidateQueries({ 
+            queryKey: ["/api/conversations", message.conversationId, "messages"] 
+          });
+          queryClient.invalidateQueries({ 
+            queryKey: ["/api/conversations"] 
+          });
+        }
         window.dispatchEvent(new CustomEvent('new_message', { detail: message }));
         break;
       case 'typing':

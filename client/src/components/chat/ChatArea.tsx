@@ -30,11 +30,21 @@ export default function ChatArea({ conversationId, onOpenSidebar }: ChatAreaProp
     queryKey: ["/api/conversations", conversationId],
   });
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery<MessageWithSender[]>({
+  const { data: messages = [], isLoading: messagesLoading, error: messagesError } = useQuery<MessageWithSender[]>({
     queryKey: ["/api/conversations", conversationId, "messages"],
+    enabled: !!conversationId,
   });
 
-  const { sendMessage: sendWebSocketMessage, isConnected } = useWebSocket(user?.id || '');
+  // Debug logging
+  useEffect(() => {
+    console.log("ChatArea - conversationId:", conversationId);
+    console.log("ChatArea - conversation:", conversation);
+    console.log("ChatArea - messages:", messages);
+    console.log("ChatArea - messagesLoading:", messagesLoading);
+    console.log("ChatArea - messagesError:", messagesError);
+  }, [conversationId, conversation, messages, messagesLoading, messagesError]);
+
+  const { sendMessage: sendWebSocketMessage, isConnected } = useWebSocket(user?.id || '', conversationId);
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {

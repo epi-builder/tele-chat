@@ -189,14 +189,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const conversation = await storage.getConversation(id);
       if (conversation) {
         const participantIds = conversation.participants.map(p => p.userId);
+        console.log(`Broadcasting message to participants:`, participantIds);
         for (const participantId of participantIds) {
           const ws = wsConnections.get(participantId);
           if (ws && ws.readyState === WebSocket.OPEN) {
+            console.log(`Sending WebSocket message to user ${participantId}`);
             ws.send(JSON.stringify({
               type: 'new_message',
               message,
               conversationId: id,
             }));
+          } else {
+            console.log(`User ${participantId} not connected or WebSocket closed`);
           }
         }
       }
@@ -222,11 +226,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (message.type === 'auth') {
           userId = message.userId;
-          wsConnections.set(userId, ws);
-          console.log(`User ${userId} connected via WebSocket`);
+          if (userId) {
+            wsConnections.set(userId, ws);
+            console.log(`User ${userId} connected via WebSocket`);
+          }
         }
         
-        if (message.type === 'typing') {
+        if (message.type === 'typing' && userId) {
           // Broadcast typing indicator to other participants
           const { conversationId, isTyping } = message;
           storage.getConversation(conversationId).then(conversation => {
