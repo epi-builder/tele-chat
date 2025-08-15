@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Menu, Search, MoreVertical, Paperclip, Send, Settings, LogOut, Users, MessageSquare } from "lucide-react";
+import { Menu, Search, MoreVertical, Paperclip, Send, Settings, LogOut, Users, MessageSquare, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useAuth } from "@/hooks/useAuth";
